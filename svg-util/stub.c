@@ -4,6 +4,7 @@ int matrix_getx(){return 0;}
 int matrix_gety(){return 0;}
 
 typedef int RGB;
+void matrix_set(int x, int y, RGB color) {};
 // MOCKUP STUFF END
 
 
@@ -45,21 +46,27 @@ int draw(){
     int my = matrix_gety();
     for (int x = 0; x < mx;x++){
         for (int y = 0; y < my;y++){
+            float x0 = (float) x;
+            float y0 = (float) y;
             for (struct polygon * poly = polys;;){
+                int counter = 0;
+                // TODO: line iteration
                 for (struct point * pt = poly->points;;){
                     float x1 = pt->x;
                     float x2 = pt->x;
                     float y1 = pt->y;
                     float y2 = pt->y;
+                    // TODO: line iteration
                     _sort2(x1,x2);
                     _sort2(y1,y2);
-                    float x0 = (float) x;
-                    float y0 = (float) y;
                     if ((x1 < x0 && x0 < x2)||(y1 < y0 && y0 < y2)){ // x or y relevant
                         if ((x1 + (y0 - y1) * (x2-x1)/(y2-y1)) > x0) { // line cross above
-
+                            counter ++;
                         }
                     }
+                }
+                if (counter&1){
+                    matrix_set(x,y,poly->color);
                 }
             }
         }
