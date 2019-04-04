@@ -13,8 +13,9 @@ struct point {
     float y;
 } point;
 
+#define FIX_THIS 3
 struct polygon{
-    struct point * points;
+    struct point points[3];
     int numpoints;
     RGB color;
     float min_x;
@@ -22,9 +23,6 @@ struct polygon{
     float min_y;
     float max_y;
 } polygon;
-
-struct polygon * polys;
-int numpolys;
 
 struct line {
     float x1;
@@ -34,6 +32,16 @@ struct line {
 } line;
 // DATA STUFF END
 
+// manually written triangle.
+int numpolys = 1;
+struct polygon polys[1] = {{
+								 .numpoints = 3,
+								 .points = {
+														{0.5f, 0.3f},
+														{0.8f, 0.8f},
+														{0.3f, 0.8f},
+								 },
+	}};
 
 // STUB STUFF
 
@@ -45,8 +53,8 @@ int draw(){
     int my = matrix_gety();
     for (int x = 0; x < mx;x++){
         for (int y = 0; y < my;y++){
-            for (struct polygon * poly = polys;;){
-                for (struct point * pt = poly->points;;){
+            for (struct polygon poly = polys[0];;){
+                for (struct point * pt = poly.points;;){
                     float x1 = pt->x;
                     float x2 = pt->x;
                     float y1 = pt->y;
