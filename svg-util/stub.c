@@ -37,7 +37,8 @@ struct polygon{
 
 
 // DATA SECTION BEGIN
-// manually written triangles.
+// THIS SECTION WILL BE OVERWRITTEN AUTOMATICALLY
+// manually written triangles
 #define NUMPOINTS 9
 float pointcloud[NUMPOINTS*2] = {
     // x, y
@@ -50,12 +51,6 @@ float pointcloud[NUMPOINTS*2] = {
     .0f,.1f,
     .1f,.1f,
     .05f,.03f
-    //0.5f, 0.3f,
-    //0.8f, 0.8f,
-	//0.3f, 0.8f,
-    //0.11f, 0.3f,
-    //0.8f, 0.8f,
-	//0.3f, 0.8f
 };
 #define NUMPOLYS 3
 struct polygon polys[NUMPOLYS] = {{
@@ -81,10 +76,10 @@ struct polygon polys[NUMPOLYS] = {{
 
 // SETTINGS SECTION BEGIN
 static bool USE_MARGIN = true;
-static float MARGIN_SIZE = 1.05;
-static unsigned char bg_red = 255;
-static unsigned char bg_green = 255;
-static unsigned char bg_blue = 0;
+static float MARGIN_SIZE = 1.01;
+static unsigned char bg_red = 20;
+static unsigned char bg_green = 20;
+static unsigned char bg_blue = 20;
 // SETTINGS SECTION END
 
 static int modno;
