@@ -32,21 +32,21 @@ def genArray(filename, tolerance=0.1, strokeAll = False):
                 polylength   += 1
             # else:
             #     pointcode = pointcode + bytearray("\t" + str(end_x) + "f, " + str(end_y) + "f,\n","utf-8")
-
+            red,green,blue = superpath.svgState.fill
             polycode = polycode + bytearray("\t.numpoints = "         + str(polylength)     + ",\n",    "utf-8")
-            polycode = polycode + bytearray("\t.red = "               + str("255")          + ",\n",    "utf-8")
-            polycode = polycode + bytearray("\t.green = "             + str("255")          + ",\n",    "utf-8")
-            polycode = polycode + bytearray("\t.blue = "              + str("255")          + ",\n},\n","utf-8")
+            polycode = polycode + bytearray("\t.red = "               + str(red  *255)      + ",\n",    "utf-8")
+            polycode = polycode + bytearray("\t.green = "             + str(green*255)      + ",\n",    "utf-8")
+            polycode = polycode + bytearray("\t.blue = "              + str(blue *255)      + ",\n},\n","utf-8")
             
             polycounter = polycounter + 1
-        else:
-            
-            polycode = polycode[:-2]
-            polycode = polycode + bytearray("};\n","utf-8")
+
     
     pointcode = pointcode[:-2] + bytearray("\n};","utf-8")
     
     print("#define NUMPOLYS " + str(polycounter))
+
+    polycode = polycode[:-2]
+    polycode = polycode + bytearray("};\n","utf-8")
     print(polycode.decode())
 
 
