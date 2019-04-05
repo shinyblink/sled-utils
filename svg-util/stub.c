@@ -18,6 +18,7 @@ struct polygon{
 
 // DATA STUFF END
 
+// STUB STUFF BEGIN
 // manually written triangles.
 #define NUMPOINTS 6
 float pointcloud[NUMPOINTS*2] = {
@@ -30,7 +31,7 @@ float pointcloud[NUMPOINTS*2] = {
 	0.3f, 0.8f
 };
 #define NUMPOLYS 2
-struct polygon polys[2] = {{
+struct polygon polys[NUMPOLYS] = {{
 	.numpoints = 3,
     .startpoint = 0,
     .red = 255,
@@ -43,7 +44,8 @@ struct polygon polys[2] = {{
     .green = 0,
     .blue = 255,
     }};
-// STUB STUFF
+// REPLACE ME
+// STUB STUFF END
 
 #define _sort2(a,b)\
     if (a>b) {float __tmp = a;a = b; b = __tmp;}
