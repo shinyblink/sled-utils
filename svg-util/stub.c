@@ -42,13 +42,13 @@ float pointcloud[NUMPOINTS*2] = {
     // x, y
     .0f,.0f,
     .0f,.1f,
-    .05f,.05f,
+    .07f,.05f,
     .1f,.0f,
     .1f,.1f,
-    .05f,.05f,
+    .03f,.05f,
     .0f,.1f,
     .1f,.1f,
-    .05f,.05f
+    .05f,.03f
     //0.5f, 0.3f,
     //0.8f, 0.8f,
 	//0.3f, 0.8f,
@@ -106,7 +106,7 @@ int draw(int argc, char* argv[]) {
     }
     float scale_pic = (max_x -min_x) > (max_y-min_y) ? (max_x-min_x) : max_y - min_y;
     scale_pic /= (mx > my) ? mx : my;
-    scale_pic /= 1.1;
+    scale_pic *= 1.1;
     float xoffset = (max_x + min_x)/2; 
     float yoffset = (max_y + min_y)/2; 
 
@@ -130,6 +130,7 @@ int draw(int argc, char* argv[]) {
                     float x2 = pointcloud[idx];
                     if (++idx >= end) idx = start;
                     float y2 = pointcloud[idx];
+                    if ((x0 < x1 && x0 < x2) || (x0 > x1 && x0 > x2)) continue;
                     if ((x1-x0)*(x2-x0)<0){
                         if ((y1 + ((x0 - x1) * ((y2-y1)/(x2-x1)))) > y0 ) { // line above point
                             counter++;
