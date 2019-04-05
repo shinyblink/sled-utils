@@ -23,8 +23,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+typedef char bool;
+#define true 1
+#define false 0
 
-// DATA STUFF BEGIN
 struct polygon{
     int numpoints;
     int startpoint;
@@ -33,9 +35,8 @@ struct polygon{
     unsigned char blue;
 } polygon;
 
-// DATA STUFF END
 
-// STUB STUFF BEGIN
+// DATA SECTION BEGIN
 // manually written triangles.
 #define NUMPOINTS 9
 float pointcloud[NUMPOINTS*2] = {
@@ -76,17 +77,33 @@ struct polygon polys[NUMPOLYS] = {{
     .green = 0,
     .blue = 255,
     }};
-// REPLACE ME
-// STUB STUFF END
+// DATA SECTION END
 
-// MODULE BEGIN
-
+// SETTINGS SECTION BEGIN
+static bool USE_MARGIN = true;
+static float MARGIN_SIZE = 1.05;
+static unsigned char bg_red = 255;
+static unsigned char bg_green = 255;
+static unsigned char bg_blue = 0;
+// SETTINGS SECTION END
 
 static int modno;
 
-#define _sort2(a,b)\
-    if (a>b) {float __tmp = a;a = b; b = __tmp;}
+#define AA_NUM 8
+static float aa_point_offsets[AA_NUM][2] = {
+    {0.45f,0.4},
+    {-0.4f,0.45},
+    {-0.45f,-0.4},
+    {0.4f,-0.45},
+    {0.2f,0.05},
+    {-0.05f,0.2},
+    {-0.2f,-0.05},
+    {0.05f,-0.2}
+};
 
+
+
+#define _max(a,b) (a) > (b) ? (a) : (b)
 
 int draw(int argc, char* argv[]) {
     matrix_clear();
@@ -104,46 +121,67 @@ int draw(int argc, char* argv[]) {
         if (x <  min_x) min_x = x;
         if (y < min_y) min_y = y;
     }
-    float scale_pic = (max_x -min_x) > (max_y-min_y) ? (max_x-min_x) : max_y - min_y;
-    scale_pic /= (mx > my) ? mx : my;
-    scale_pic *= 1.1;
+    float scale = _max((max_x-min_x)/mx,(max_y-min_y)/my);
+    if (USE_MARGIN) scale *= MARGIN_SIZE;
     float xoffset = (max_x + min_x)/2; 
     float yoffset = (max_y + min_y)/2; 
 
     for (int x = 0; x < mx;x++){
         for (int y = 0; y < my;y++){
-            float x0 = (float) x;
-            x0 -= mx/2; x0 *= scale_pic; x0 += xoffset+0.001*scale_pic;
-            float y0 = (float) y;
-            y0 -= my/2; y0 *= scale_pic; y0 += yoffset+0.001*scale_pic;
-            for (int i_poly = 0; i_poly < NUMPOLYS; i_poly++){
-                struct polygon poly = polys[i_poly];
-                int counter = 0;
-                int start = poly.startpoint*2;
-                int end = poly.startpoint*2 + poly.numpoints*2;
-                for (int i_point = start; i_point < end; i_point+=2){
-                    int idx = i_point;
-                    float x1 = pointcloud[idx];
-                    if (++idx >= end) idx = start;
-                    float y1 = pointcloud[idx];
-                    if (++idx >= end) idx = start;
-                    float x2 = pointcloud[idx];
-                    if (++idx >= end) idx = start;
-                    float y2 = pointcloud[idx];
-                    if ((x0 < x1 && x0 < x2) || (x0 > x1 && x0 > x2)) continue;
-                    if ((x1-x0)*(x2-x0)<0){
-                        if ((y1 + ((x0 - x1) * ((y2-y1)/(x2-x1)))) > y0 ) { // line above point
-                            counter++;
+            float xp = (float) x;
+            xp -= mx/2; xp *= scale; xp += xoffset;
+            float yp = (float) y;
+            yp -= my/2; yp *= scale; yp += yoffset;
+            unsigned char aa_r[AA_NUM];
+            unsigned char aa_g[AA_NUM];
+            unsigned char aa_b[AA_NUM];
+            for (int i_aa=0;i_aa < AA_NUM; i_aa++){
+                float x0 = xp + aa_point_offsets[i_aa][0]*scale;
+                float y0 = yp + aa_point_offsets[i_aa][1]*scale;
+                aa_r[i_aa] = bg_red;
+                aa_g[i_aa] = bg_green;
+                aa_b[i_aa] = bg_blue;
+                for (int i_poly = 0; i_poly < NUMPOLYS; i_poly++){
+                    struct polygon poly = polys[i_poly];
+                    int counter = 0;
+                    int start = poly.startpoint*2;
+                    int end = poly.startpoint*2 + poly.numpoints*2;
+                    for (int i_point = start; i_point < end; i_point+=2){
+                        int idx = i_point;
+                        float x1 = pointcloud[idx];
+                        if (++idx >= end) idx = start;
+                        float y1 = pointcloud[idx];
+                        if (++idx >= end) idx = start;
+                        float x2 = pointcloud[idx];
+                        if (++idx >= end) idx = start;
+                        float y2 = pointcloud[idx];
+                        if ((x0 < x1 && x0 < x2) || (x0 > x1 && x0 > x2)) continue;
+                        if ((x1-x0)*(x2-x0)<0){
+                            if ((y1 + ((x0 - x1) * ((y2-y1)/(x2-x1)))) > y0 ) {
+                                counter++;
+                            }
                         }
                     }
-                }
-                if ((counter%2)){
-                    matrix_set(x,y,RGB(poly.red,poly.green,poly.blue));
+                    if ((counter%2)){
+                        aa_r[i_aa] = poly.red;
+                        aa_g[i_aa] = poly.green;
+                        aa_b[i_aa] = poly.blue;
+                    }
                 }
             }
+            int red=0,green=0,blue=0;
+            for (int i_aa=0;i_aa < AA_NUM; i_aa++){
+                // TODO: gamma correction
+                red += aa_r[i_aa];
+                green += aa_g[i_aa];
+                blue += aa_b[i_aa];
+            }
+            red /= AA_NUM;
+            green /= AA_NUM;
+            blue /= AA_NUM;
+            matrix_set(x,y,RGB(red,green,blue));
         }
     }
-DONE:
     matrix_render();
 	timer_add(udate()+30000000, modno, 0, NULL);
     return 0;
