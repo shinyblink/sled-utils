@@ -27,6 +27,9 @@ typedef char bool;
 #define true 1
 #define false 0
 
+static bool toggle;
+static ulong nexttick;
+
 struct polygon{
     int numpoints;
     int startpoint;
@@ -178,8 +181,15 @@ int draw(int argc, char* argv[]) {
         }
     }
     matrix_render();
-	timer_add(udate()+30000000, modno, 0, NULL);
-    return 0;
+    nexttick += 30000000;
+	timer_add(nexttick, modno, 0, NULL);
+    if (toggle){
+        toggle = false;
+        return 1;
+    } else {
+        toggle = true;
+        return 0;
+    }
 }
 
 int init(int moduleno, char* argstr) {
@@ -190,6 +200,8 @@ int init(int moduleno, char* argstr) {
 
 void reset(void) {
     matrix_clear();
+    toggle = false;
+    nexttick = udate();
 	// Nothing?
 }
 
