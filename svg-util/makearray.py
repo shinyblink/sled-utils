@@ -11,8 +11,8 @@ def genArray(filename, tolerance=0.1):
     pointcounter = 0
     polycounter = 0
 
-    polycode = bytearray("struct polygon polys[NUMPOLYS] = {\n", "utf-8")
-    pointcode = bytearray("float pointcloud[NUMPOINTS*2] = {\n", "utf-8")
+    polycode = bytearray("static struct polygon polys[NUMPOLYS] = {\n", "utf-8")
+    pointcode = bytearray("static float pointcloud[NUMPOINTS*2] = {\n", "utf-8")
 
     for superpath in superpaths[0]:
         for path in superpath.breakup():
