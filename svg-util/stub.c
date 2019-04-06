@@ -181,14 +181,14 @@ int draw(int argc, char* argv[]) {
         }
     }
     matrix_render();
-    nexttick += 30000000;
-	timer_add(nexttick, modno, 0, NULL);
     if (toggle){
         toggle = false;
-        return 1;
-    } else {
-        toggle = true;
         return 0;
+    } else {
+        nexttick += 30000000;
+	    timer_add(nexttick, modno, 0, NULL);
+        toggle = true;
+        return 1;
     }
 }
 
